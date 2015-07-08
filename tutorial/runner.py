@@ -22,8 +22,5 @@ from tutorial.spiders.general import GeneralSpider
 
 process = CrawlerProcess(get_project_settings())
 
-crawler = process.create_crawler()
-#spider = crawler.spiders.create('GeneralSpider', domain='piratelearner.com')
-spider = GeneralSpider(urls=['http://piratelearner.com'])
-crawler.crawl(spider)
+process.crawl('General Spider', urls=['http://piratelearner.com'])
 process.start()
