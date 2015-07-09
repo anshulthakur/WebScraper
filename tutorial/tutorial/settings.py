@@ -15,3 +15,8 @@ NEWSPIDER_MODULE = 'tutorial.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'tutorial (+http://www.yourdomain.com)'
+
+DEPTH_LIMIT = 5
+DEPTH_STATS_VERBOSE = True
+LOG_FILE = 'project.log'
+ROBOTSTXT_OBEY = True

@@ -35,3 +35,7 @@ class GeneralSpider(scrapy.Spider):
             item['title'] = sel.xpath('text()').extract()
             item['url'] = sel.xpath('./@href').extract()
             yield item
+            
+        for sel in response.xpath('//a'):
+            item = response.urljoin(sel.xpath('./@href').extract()[0])
+            yield scrapy.Request(item, callback=self.parse)
