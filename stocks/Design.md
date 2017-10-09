@@ -127,3 +127,7 @@ scrapy crawl nse
 ```
 
 This should create a file `nsepage.html` containing both static and js rendered content.
+
+### Crawling all pages on a website
+* We want to crawl all pages on a web domain (to check for 404 errors).
+* Don't want to re-crawl same URLs. (Scrapy takes care of that)

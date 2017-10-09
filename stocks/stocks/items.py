@@ -12,3 +12,9 @@ class StocksItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+    
+class GeneralItem(scrapy.Item):
+    title = scrapy.Field()
+    url = scrapy.Field()
+    desc = scrapy.Field()
+    keywords = scrapy.Field()

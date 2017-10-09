@@ -19,8 +19,11 @@ class NSESpider(scrapy.Spider):
       yield SplashRequest(url, self.parse, 
                           args= {
                             'wait': 0.5,
-                            'timeout' : 120,
-                            #'url', 'baseurl', 'resource_timeout', 'http_method', 'body', 
+                            'timeout' : 120, #Timeout to render (default 30 sec)
+                            #'url': Prefilled by plugin
+                            #'baseurl': Base HTML content, relative resources on page referenced acc. to this., 
+                            #'resource_timeout': #Individual resource request timeout value
+                            # 'http_method', 'body', 
                             #'js', 'js_source', 'filters', 'allowed_domains', 'allowed_content_types',
                             #'forbidden_content_types', 'viewport', 'images', 'headers', 'save_args',
                             #'load_args'
