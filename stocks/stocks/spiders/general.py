@@ -15,7 +15,7 @@ from urlparse import urlparse
 
 class GeneralSpider(scrapy.Spider):
   name = "general"
-  
+  download_delay = 1.0
   def __init__(self, *args, **kwargs):
     super(GeneralSpider, self).__init__()
     

@@ -131,3 +131,18 @@ This should create a file `nsepage.html` containing both static and js rendered 
 ### Crawling all pages on a website
 * We want to crawl all pages on a web domain (to check for 404 errors).
 * Don't want to re-crawl same URLs. (Scrapy takes care of that)
+
+**Politeness**
+I saw that scrapy's crawl caused masive hits on my analytics page. That means that the analytics API identifies my crawler as a user and not a bot. I would not want that. So, let's delve a little into the politeness of a scraper and how to identify it as a bot.
+[Res1](https://blog.scrapinghub.com/2016/08/25/how-to-crawl-the-web-politely-with-scrapy/)
+
+What I already know:
+- Obey robots.txt
+- Do not scrape too fast to cause either blocking of own IP or damaging the response time of the target site. Crawl slowly.
+
+Changes:
+- Set a UserAgent to identify the bot.
+- Set DOWNLOAD_DELAY to 1(second) (Instead, set it in the spider class as `download_delay`)
+- Enable autothrottle
+- Enable HTTPCACHE during development
+
