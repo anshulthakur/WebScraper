@@ -131,6 +131,11 @@ This should create a file `nsepage.html` containing both static and js rendered 
 ### Crawling all pages on a website
 * We want to crawl all pages on a web domain (to check for 404 errors).
 * Don't want to re-crawl same URLs. (Scrapy takes care of that)
+* We want to avoid some pages (like the login pages. Avoid URLs that have same base URL but different GET parameters, like social media share buttons.) While we would want these rules to be fairly generic, we would also like them to have some element of self-learning and adaptiveness.
+
+```
+scrapy crawl general -o ab_url_list.csv
+```
 
 **Politeness**
 I saw that scrapy's crawl caused masive hits on my analytics page. That means that the analytics API identifies my crawler as a user and not a bot. I would not want that. So, let's delve a little into the politeness of a scraper and how to identify it as a bot.
@@ -145,4 +150,27 @@ Changes:
 - Set DOWNLOAD_DELAY to 1(second) (Instead, set it in the spider class as `download_delay`)
 - Enable autothrottle
 - Enable HTTPCACHE during development
+
+### More generic nature: Take URL name from CLI
+
+Okay, I've done this part before. I want to pass the name of the URL from the user at runtime rather than having it put in the script. Let's re-do that part.
+
+__Regarding the filters__
+It would be better if scrapy itself did the filtering in the link extractors. That can be done if the rules are initialized when the spider is initialized. Modifying our init function may just help that.
+
+Nope, it does not work out of the box. Using the Rule during init does not work.
+
+
+**When taking the URLs from command line, how do we save the output into a file?**
+Using Feed Exporters. For now, the refular ones will work. We will use [CSV](https://doc.scrapy.org/en/latest/topics/feed-exports.html#topics-feed-exports)
+Use the `FEED_URI` setting:
+
+```
+FEED_URI='ab_list_url.csv'
+FEED_FORMAT='csv'
+```
+> Note that FEED_URI as `FEED_URI='file://ab_list_url.csv'` does not work properly.
+
+**Now, what if we want to have a different list for each domain?**
+Clearly, a global setting would not be good for that. In that case, we probably start using the Pipeline and Item Exporters directly.
 
