@@ -174,3 +174,32 @@ FEED_FORMAT='csv'
 **Now, what if we want to have a different list for each domain?**
 Clearly, a global setting would not be good for that. In that case, we probably start using the Pipeline and Item Exporters directly.
 
+
+### For stocks
+I want to download the list of all the stocks listed in the market, and then, download all historical data that is currently available. This shouldn't require Scraping but some lightweight scripting.
+
+NSE has less number of shares. So, I'll go with BSE data.
+
+But if it does not allow some API access, then I'll either need to employ Selenium, or via Scrapy-Splash only.
+
+So far, we've created a Selenium script to download historical data and it works fairly fine. Here are the key tweaks:
+
+- Generic Nature had to be forfeit to get more particular results: 
+  - Search Fields explicitly by ID
+  - The 'To' Date Field does not allow keyboard input. So, we could either mimick the opening of the calendar and select the appropriate date, which could be done, or just go in with the default date (which is of the current day). I went with the latter as I hope to complete the entire pull in a single sitting.
+- The BSE site sometimes returned a `503 Internal Error` message on proper pages. This might be because it does not want me to access the site in an automated manner. So, we wrote an `if-else` block to retry the page if such error happened.
+
+Few things not yet known:
+- Threads in Python.
+- New tabs via selenium.
+
+### Data Modelling: Linear Regression
+
+Some questions we'd like an answer to:
+
+1. Throw in the trending of all the stocks, what is the performance of clustering? Does it have any semblance to the clustering by industry type?
+2. How does the co-variance matrix of the stocks data look like? Can it tell which stocks are closely correlated? Positively Correlated, Negatively Correlated, Independent?
+3. Given the daily trading positions of the past 10 years, can a linear regression model predict the next value? If yes, then to what accuracy? What should the features be? Hmm! Take one share. Assume that its position is related to the positions of all other shares in the market. Say, its price is going to be affected by the prices, the volumes traded, the percentage changes (some kind of normalization) of other prices. Similarly, its volume is also going to be affected in a similar manner.
+4. Indian Markets also derive influence from markets worldwide. So, how much do we need to factor in their movement and trends to account for local variations?
+5. How does crude oil prices affect market?
+6. How do warfare in the Middle East, UN and US interventions, China, and North Korea military and diplomatic movements affect our markets?
