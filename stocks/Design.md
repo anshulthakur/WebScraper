@@ -209,3 +209,5 @@ Some questions we'd like an answer to:
 1. Selenium is slow. [This](https://stackoverflow.com/questions/18150593/selenium-multiple-tabs-at-once/18150682) indicates that we can't use single driver for multiple tabs simultaneously. Instead, using multiple driver instances is recommended.
 
 2. In case one wants to look at how to handle multiple tabs, [read here](https://stackoverflow.com/questions/39281806/python-opening-multiple-tabs-using-selenium).
+
+3. We are using a generator function. It is noted [here](https://stackoverflow.com/questions/1131430/are-generators-threadsafe) that generators are not thread-safe. Good examples are given too on the sue of Queues and one other method.
