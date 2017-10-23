@@ -203,3 +203,9 @@ Some questions we'd like an answer to:
 4. Indian Markets also derive influence from markets worldwide. So, how much do we need to factor in their movement and trends to account for local variations?
 5. How does crude oil prices affect market?
 6. How do warfare in the Middle East, UN and US interventions, China, and North Korea military and diplomatic movements affect our markets?
+
+### Okay, back to automation:
+
+1. Selenium is slow. [This](https://stackoverflow.com/questions/18150593/selenium-multiple-tabs-at-once/18150682) indicates that we can't use single driver for multiple tabs simultaneously. Instead, using multiple driver instances is recommended.
+
+2. In case one wants to look at how to handle multiple tabs, [read here](https://stackoverflow.com/questions/39281806/python-opening-multiple-tabs-using-selenium).
