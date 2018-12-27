@@ -11,6 +11,7 @@ class Listing(models.Model):
                               null=False, 
                               on_delete = models.CASCADE)
     links = models.ManyToManyField('Listing')#Assuming that we can filter external and internal links by chaining.
+    crawled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

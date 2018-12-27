@@ -63,6 +63,13 @@ class GeneralSpider(scrapy.Spider):
   def parse(self, response):
     #First, create a general item for the current page
     print(response.url)
+    try:
+        listing = Listing.objects.get(url=strip_url(response.url))
+        if listing.crawled == True:
+          return #Don't parse it
+    except Listing.DoesNotExist:
+        pass
+
     validator = URLValidator()
     page = GeneralItem()
     page['title']=response.css('title::text').extract_first() or ''
@@ -96,22 +103,29 @@ class GeneralSpider(scrapy.Spider):
     #if they're of our domain and have not been parsed before
     #this filtering is taken care of by the allowed_domains field.
     for selection in response.xpath('//a'):
-        url = selection.xpath('./@href').extract_first()
+      url = selection.xpath('./@href').extract_first()
+      try:
+        if len(url) > 0 and url.strip()[0] == '/':
+          url = response.urljoin(url)
+        validator(url)
+        if urlparse(url).scheme == '':
+          url = 'http://'+url
+        #Check if the URL already exists in DB. 
+        #If it does, we don't want to parse it because we already did last time.
         try:
-          if len(url) > 0 and url.strip()[0] == '/':
-            url = response.urljoin(url)
-          validator(url)
-          if urlparse(url).scheme == '':
-            url = 'http://'+url
-          #Check if the URL already exists in DB. 
-          #If it does, we don't want to parse it because we already did last time.
-          try:
-            obj = Listing.objects.get(url=strip_url(url))
-            #print('skip {}'.format(obj.url))
-          except Listing.DoesNotExist:
-            #print('parse {}'.format(url))
-            request = scrapy.Request(url=url, callback=self.parse)
-            request.meta['parent'] = response.url
-            yield(request)
-        except:
-          pass
+          obj = Listing.objects.get(url=strip_url(url))
+          #print('skip {}'.format(obj.url))
+        except Listing.DoesNotExist:
+          #print('parse {}'.format(url))
+          request = scrapy.Request(url=url, callback=self.parse)
+          request.meta['parent'] = response.url
+          yield(request)
+      except:
+        pass
+    try:
+      listing = Listing.objects.get(url=strip_url(response.url))
+      listing.crawled = True
+      listing.save()
+    except Listing.DoesNotExist:
+      print('Awkward: {} must have existed'.format(strip_url(response.url)))
+

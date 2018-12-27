@@ -36,3 +36,11 @@ Also, creates an entry to those domains and URLs in the DB
 * How do we make sure that Scrapy does not scrape the URLs that it has already seen. We don't want to pass them to Scrapy even when it filters duplicates. For spanning a crawl across multiple sessions, we'll use Scrapy's persistence feature. That allows pausing. But when does Scrapy stop? So, it will probably go on crawling unless our parse function gives up. So, our yield has to stop. This can be done if we don't find any new URL. 
 
 This calls for querying from right inside the spider code, something I was trying to avoid (and hence, using pipeline). Anyhow!
+
+That done. Now, we want to scale. What we want to do is, move from one website to another after the first one has been completely crawled. But, sometimes, it migght happen that we have to abort crawling midway and aren't quite done. So, how can we resume crawling from the same pages that we left off?
+
+One is to make an entry in DB itself when we are done crawling a page. We are done once all its internal links have been yielded. But, by the time we get to this point, the internal links parsed will themselves have started crawl processes. So, DFS comes to bite us here. We can continue with our existing formulation and put up a field in DB marking the status of the URL. So, the `Listing` is created when we enter parsing it, and it is updated when we exit. Then, next time we start at a place which exists in DB with status set to `pending`. It goes down the rabbit hole and encounters more URLs that it has already seen. If they are marked as parsed, skip, else parse. This seems okay in order to maintain the parent-child relationship here.
+
+Another method would be to only make an entry in DB once we are done parsing. But in that case, we always have to start with the base seed URL because its entry isn't created until we are done.
+
+So, using the first method. We must also check while entering a parsing routine if we've parsed it before. Now, that makes things a bit ugly. We created the first DB object in a pipeline. Here, we are explicitly checking its existence in the parse function. When so much of DB has already entered the parse function, why not just make the entry in this function too? Why keep a pipeline?
