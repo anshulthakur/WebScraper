@@ -16,6 +16,9 @@ import blogverse.spiders.filter_rules as filter_rules
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
+from blogmap.models import Listing
+from utils import strip_url
+
 class GeneralSpider(scrapy.Spider):
   name = "general"
   download_delay = 1.0
@@ -59,6 +62,7 @@ class GeneralSpider(scrapy.Spider):
 
   def parse(self, response):
     #First, create a general item for the current page
+    print(response.url)
     validator = URLValidator()
     page = GeneralItem()
     page['title']=response.css('title::text').extract_first() or ''
@@ -71,22 +75,21 @@ class GeneralSpider(scrapy.Spider):
 
     yield page
 
-    #Then, parse all URLs on this page and make an entry for them
-    item = GeneralItem()
+    #Then, parse all URLs on this page and make an entry for them if they aren't this domain's
     for url in response.xpath('//a/@href').extract():
       try:
-        if validator(url) and len(url) > 0 and url.strip()[0] == '/':
-          item['url'] = response.urljoin(url)
-        else:
-          item['url'] = url
-      
+        if len(url) > 0 and url.strip()[0] == '/':
+          url = response.urljoin(url)
+        validator(url)
         if urlparse(url).scheme == '':
           url = 'http://'+url
-        item['title'] = None
-        item['author'] = None
-        item['parent'] = response.url
-
-        yield item
+        if urlparse(url).hostname != urlparse(response.url).hostname:
+          item = GeneralItem()
+          item['url'] = url
+          item['title'] = None
+          item['author'] = None
+          item['parent'] = response.url
+          yield item
       except ValidationError:
         pass
     #Finally, feed all the  URLs on this page for further parsing
@@ -95,15 +98,19 @@ class GeneralSpider(scrapy.Spider):
     for selection in response.xpath('//a'):
         url = selection.xpath('./@href').extract_first()
         try:
+          if len(url) > 0 and url.strip()[0] == '/':
+            url = response.urljoin(url)
           validator(url)
-          if url is not None and len(url) > 0:
-            if url.strip()[0] == '/':
-                item = response.urljoin(url)
-            else:
-                item = url
-            if urlparse(item).scheme == '':
-                item = 'http://'+item
-            request = scrapy.Request(url=item, callback=self.parse)
+          if urlparse(url).scheme == '':
+            url = 'http://'+url
+          #Check if the URL already exists in DB. 
+          #If it does, we don't want to parse it because we already did last time.
+          try:
+            obj = Listing.objects.get(url=strip_url(url))
+            #print('skip {}'.format(obj.url))
+          except Listing.DoesNotExist:
+            #print('parse {}'.format(url))
+            request = scrapy.Request(url=url, callback=self.parse)
             request.meta['parent'] = response.url
             yield(request)
         except:

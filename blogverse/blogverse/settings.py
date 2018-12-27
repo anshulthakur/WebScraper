@@ -7,8 +7,7 @@ import sys
 from django.conf import settings
 from django.apps import apps
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-
+sys.path.append(os.path.dirname(os.path.realpath(__file__))) 
 conf = {
         'INSTALLED_APPS': [
             'blogmap'
@@ -115,3 +114,4 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 LOG_LEVEL='INFO'
+#JOB_DIR='./state/'

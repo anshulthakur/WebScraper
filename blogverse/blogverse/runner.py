@@ -8,9 +8,10 @@ path = os.path.dirname(os.path.realpath(__file__))+'/../'
 print(path)
 sys.path.append(path)
 
-from blogverse.spiders.general import GeneralSpider
 
 process = CrawlerProcess(get_project_settings())
+
+from blogverse.spiders.general import GeneralSpider
 
 if len(sys.argv)<2:
   print('Usage:\n python {} <domain url/seed>'.format(__file__))

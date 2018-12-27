@@ -59,6 +59,7 @@ class GeneralSpiderPipeline(object):
                           domain=domain,
                           title=item['title'] or '')
         listing.save()
+        #print(listing.url)
        
       if item['parent'] is not None:
         parent=re.sub(r'^www\.', '', urlparse(item['parent']).hostname)

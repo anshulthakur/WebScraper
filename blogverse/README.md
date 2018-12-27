@@ -32,3 +32,7 @@ python runner.py <domain url>
 
 This crawls all the URLs on a domain whether or not they belong to that domain.
 Also, creates an entry to those domains and URLs in the DB
+
+* How do we make sure that Scrapy does not scrape the URLs that it has already seen. We don't want to pass them to Scrapy even when it filters duplicates. For spanning a crawl across multiple sessions, we'll use Scrapy's persistence feature. That allows pausing. But when does Scrapy stop? So, it will probably go on crawling unless our parse function gives up. So, our yield has to stop. This can be done if we don't find any new URL. 
+
+This calls for querying from right inside the spider code, something I was trying to avoid (and hence, using pipeline). Anyhow!
