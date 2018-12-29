@@ -113,5 +113,8 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-LOG_LEVEL='INFO'
+LOG_LEVEL='DEBUG'
+LOG_ENABLED=True
+LOG_FILE=os.path.dirname(os.path.realpath(__file__))+'/crawl_log.txt'
+
 #JOB_DIR='./state/'

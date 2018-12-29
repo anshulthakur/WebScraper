@@ -16,7 +16,7 @@ import blogverse.spiders.filter_rules as filter_rules
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
-from blogmap.models import Listing
+from blogmap.models import Listing, Domain, Linkage
 from utils import strip_url
 
 class GeneralSpider(scrapy.Spider):
@@ -37,21 +37,6 @@ class GeneralSpider(scrapy.Spider):
           self.start_urls[idx] = 'http://%s/' %url
     
     self.allowed_domains = [re.sub(r'^www\.','', urlparse(url).hostname) for url in self.start_urls]
-
-    #print 'Printing Allowed domains list'
-    #print self.allowed_domains
-
-    
-  #def start_requests(self):
-  #  #urls = ['http://aestheticblasphemy.com',]
-  #  urls = []
-  #  print('start_requests')
-  #  for url in urls:
-  #    #Update allowed domains
-  #    allowed_domains = [ re.sub(r'^www\.', '', urlparse(url).hostname) for url in urls]
-  #    self.change_allowed_domains(allowed_domains)
-  #
-  #    yield scrapy.Request(url=url, callback=self.parse)
 
   def change_allowed_domains(self, allowed_domains):
     self.allowed_domains = allowed_domains
@@ -81,7 +66,8 @@ class GeneralSpider(scrapy.Spider):
       page['parent'] = None
 
     yield page
-
+    #page = self.process_item(page)
+    
     #Then, parse all URLs on this page and make an entry for them if they aren't this domain's
     for url in response.xpath('//a/@href').extract():
       try:
@@ -97,6 +83,7 @@ class GeneralSpider(scrapy.Spider):
           item['author'] = None
           item['parent'] = response.url
           yield item
+          #self.process_item(item)
       except ValidationError:
         pass
     #Finally, feed all the  URLs on this page for further parsing
@@ -128,4 +115,3 @@ class GeneralSpider(scrapy.Spider):
       listing.save()
     except Listing.DoesNotExist:
       print('Awkward: {} must have existed'.format(strip_url(response.url)))
-

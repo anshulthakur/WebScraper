@@ -17,3 +17,6 @@ class Domain(models.Model):
 
     def get_url(self):
         return self.url
+
+    class Meta:
+        indexes = [models.Index(fields=['url'], name="domain_url_index")]

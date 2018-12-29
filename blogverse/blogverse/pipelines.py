@@ -9,9 +9,10 @@ from scrapy import signals
 from scrapy.exceptions import DropItem
 
 #import settings
-from blogmap.models import Domain, Listing
+from blogmap.models import Domain, Listing, Linkage
 from urllib.parse import urlparse
-import re
+from utils import strip_url
+
 class GeneralSpiderPipeline(object):
     def __init__(self):
       self.files={}
@@ -31,24 +32,22 @@ class GeneralSpiderPipeline(object):
 
     def process_item(self, item, spider):
       #If the parent domain is new, make that entry too.
-      parsed_url = urlparse(item['url'])
-      url = re.sub(r'^www\.', '', urlparse(item['url']).hostname)
-      if urlparse(item['url']).path !='/':
-        url = url+urlparse(item['url']).path
-      #print('URL {}\tParent {}'.format(url, item.get('parent', None) ))
+      url = strip_url(item['url'])
+      parsed_url = urlparse(item['url']) #http:// once lost causes urlparse to not detect netloc etc. properly. It puts everything in path
+      #print('Process {}'.format(url))
       try:
-        domain = Domain.objects.get(url=re.sub(r'^www\.', '', parsed_url.hostname))
+        domain = Domain.objects.get(url=parsed_url.hostname)
 
-        if item['title'] is not None and item['title'] !='' and domain.name=='' and parsed_url.path=='':
-          domain.name=item['title']
+        if item['title'] is not None and item['title'].strip() !='' and domain.name=='' and (parsed_url.path=='' or parsed_url.path=='/'):
+          domain.name=item['title'].strip()
           domain.save()
       except Domain.DoesNotExist:
         #Set title if title is provided and we aren't a subtree node.
-        if parsed_url.path=='' or parsed_url.path=='/':
-          name=item['title'] or ''
+        if (parsed_url.path=='' or parsed_url.path=='/') and (item['title'] != None):
+          name=item['title'].strip() or ''
         else:
           name=''
-        domain = Domain(url=re.sub(r'^www\.', '', parsed_url.hostname), name=name)
+        domain = Domain(url=parsed_url.hostname, name=name)
         domain.save()
 
       #Validate existence of the URL in our tables. If it does, don't create entry.
@@ -59,13 +58,15 @@ class GeneralSpiderPipeline(object):
                           domain=domain,
                           title=item['title'] or '')
         listing.save()
-        #print(listing.url)
        
       if item['parent'] is not None:
-        parent=re.sub(r'^www\.', '', urlparse(item['parent']).hostname)
-        if urlparse(item['parent']).path!='/':
-            parent = parent+urlparse(item['parent']).path
+        parent = strip_url(item['parent'])
         #print('Parent: {}'.format(parent))
-        listing.links.add(Listing.objects.get(url=parent))
+        try:
+          linkage = Linkage.objects.get(source=Listing.objects.get(url=parent), destination=listing)
+          linkage.frequency +=1
+          linkage.save()
+        except Linkage.DoesNotExist:
+          Linkage.objects.create(source=Listing.objects.get(url=parent), destination=listing)
 
       return item

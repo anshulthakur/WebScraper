@@ -44,3 +44,12 @@ One is to make an entry in DB itself when we are done crawling a page. We are do
 Another method would be to only make an entry in DB once we are done parsing. But in that case, we always have to start with the base seed URL because its entry isn't created until we are done.
 
 So, using the first method. We must also check while entering a parsing routine if we've parsed it before. Now, that makes things a bit ugly. We created the first DB object in a pipeline. Here, we are explicitly checking its existence in the parse function. When so much of DB has already entered the parse function, why not just make the entry in this function too? Why keep a pipeline?
+
+The querying of DB and checking for existence is a bit slow. So, we could consider having the entries in memories while the size of DB isn't too large. Of course, this ain't very scalable.
+
+* OK. So, now our parsing works more or less fine. On to the next objective. We want to maintain the strength of association between links. So, `a->b` alone is not enough. We also want to know how many times does `a` link to `b` on the page, and on the overall domain. For now, I'm forgoing the time stamping. But, can't this be computed on the go? We have the many to many table. So, put a condition of field 1 `contains` URL `a` and field 2 `contains` URL `b` and count the results. This does not count multiple occurances on a single page. So, if there was a conversation going on between two peoples, that won't be recorded in this simplified model. So, we could instead use an intermediate table explicitly. And lo! that too is supported in Django. So, we create a linkage table and do things to it.
+
+* The thing is too slow for now. Too many DB queries for each request. What we want to do is speed up the crawling operation a little bit. I have been suggested a few things:
+  - Put the DB in tmpfs (on RAM) since read/write to disk is slow. Once done crawling, move it out to disk.
+  - Index the URL fields. That is supposed to make queries run fast.
+Also, I would want to avoid DB queries as much as possible. So, we could have the lists in memory, but I don't think that is very scalable.
