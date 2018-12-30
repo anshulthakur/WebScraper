@@ -53,3 +53,5 @@ The querying of DB and checking for existence is a bit slow. So, we could consid
   - Put the DB in tmpfs (on RAM) since read/write to disk is slow. Once done crawling, move it out to disk.
   - Index the URL fields. That is supposed to make queries run fast.
 Also, I would want to avoid DB queries as much as possible. So, we could have the lists in memory, but I don't think that is very scalable.
+
+* Further, this is supposed to be a very slow process. So, it could be a cron task, or an init.d task that starts running in the background and keeps running. Over time, it will have gathered a lot of information and we could then start doing something about it.
