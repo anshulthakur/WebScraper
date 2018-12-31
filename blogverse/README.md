@@ -55,3 +55,5 @@ The querying of DB and checking for existence is a bit slow. So, we could consid
 Also, I would want to avoid DB queries as much as possible. So, we could have the lists in memory, but I don't think that is very scalable.
 
 * Further, this is supposed to be a very slow process. So, it could be a cron task, or an init.d task that starts running in the background and keeps running. Over time, it will have gathered a lot of information and we could then start doing something about it.
+
+So, we've made a systemd service out of it. One issue seems to be that of lazy evaluation of the `get_project_settings()` when called from systemd. It was causing the Django settings to be not found in the next line. So, we've reimported settings file in a try catch block in case issue arises.

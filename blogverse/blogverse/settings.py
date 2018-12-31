@@ -7,6 +7,11 @@ import sys
 from django.conf import settings
 from django.apps import apps
 
+import logging
+
+# get an instance of the logger object this module will use
+logger = logging.getLogger("blogverse")
+
 sys.path.append(os.path.dirname(os.path.realpath(__file__))) 
 conf = {
         'INSTALLED_APPS': [
@@ -20,6 +25,7 @@ conf = {
         }
     }
 
+logger.info('In settings')
 settings.configure(**conf)
 apps.populate(settings.INSTALLED_APPS)
 ############################################################################################

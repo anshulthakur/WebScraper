@@ -1,0 +1,13 @@
+[Unit]
+Description=Blog Scraping Service
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=1
+ExecStart=/home/craft/projects/scraper_env/bin/python /home/craft/projects/WebScraper/blogverse/blogverse/runner.py http://purba-ray.blogspot.com
+
+[Install]
+WantedBy=multi-user.target
