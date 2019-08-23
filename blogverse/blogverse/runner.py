@@ -45,7 +45,7 @@ if len(sys.argv)<2:
   exit()
 
 domain = sys.argv[1]
-#print('crawling {}'.format(domain))
+print('crawling {}'.format(domain))
 logger.info('Start crawling {}'.format(domain))
 
 @defer.inlineCallbacks
@@ -58,13 +58,13 @@ def crawl(domain):
       for url in urls:
         yield process.crawl('general', urls=url.url)
     except Listing.DoesNotExist:
-        #print('Listing does not exist')
+        print('Listing does not exist')
         logger.info('Listing does not exist')
     except:
-        #print('Something happened while getting unparsed URLs from the domain')
+        print('Something happened while getting unparsed URLs from the domain')
         logger.info('Something happened while getting unparsed URLs from the domain')
         for line in sys.exc_info():
-         # print("{}", line)
+         print("{}", line)
          logger.info('{}'.format(line))
     #Now that we've finished crawling the seed URL, iterate through the other domains found and parse them too.
     try:
@@ -87,7 +87,7 @@ def crawl(domain):
         yield process.crawl('general', urls=url.url)
     except:
         for line in sys.exc_info():
-          #print("{}", line)
+          print("{}", line)
           logger.info('{}'.format(line))
     reactor.stop()
 

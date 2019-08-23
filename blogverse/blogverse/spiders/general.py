@@ -53,6 +53,7 @@ class GeneralSpider(scrapy.Spider):
 
   def parse(self, response):
     #First, create a general item for the current page
+    print(response.url)
     try:
         listing = Listing.objects.get(url=strip_url(response.url))
         if listing.crawled == True:
@@ -60,7 +61,6 @@ class GeneralSpider(scrapy.Spider):
     except Listing.DoesNotExist:
         pass
 
-    #print(response.url)
     logger.info('{}'.format(response.url))
     validator = URLValidator()
     page = GeneralItem()
@@ -121,5 +121,5 @@ class GeneralSpider(scrapy.Spider):
       listing.crawled = True
       listing.save()
     except Listing.DoesNotExist:
-      #print('Awkward: {} must have existed'.format(strip_url(response.url)))
+      print('Awkward: {} must have existed'.format(strip_url(response.url)))
       logger.info('Awkward: {} must have existed'.format(strip_url(response.url)))

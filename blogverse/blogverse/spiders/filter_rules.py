@@ -20,4 +20,8 @@ exclude_domains = ["feedspot.com",
                    "wikipedia.org",
                    "zemanta.com",
                    "yahoo.com",
+                   "indiblogger",
+                   "twitter.com",
+                   "facebook.com",
+                   "www.wordpress.com",
                    ]
